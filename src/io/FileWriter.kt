@@ -3,13 +3,18 @@ package io
 import java.io.File
 import java.io.FileOutputStream
 
+/**
+ * writing decompressed data into file
+ */
 class FileWriter(path: File) {
     val outputStream = FileOutputStream(path)
 
     var lastBinary = ""
 
-    //writing binary string as bits to file
-    //in other words converting binary string to int then writing to file
+    /**
+     * writing binary string as bits to file
+     * in other words converting binary string to int then writing to file
+     */
     fun write(b: String) {
         lastBinary += b
         if (lastBinary.length >= 1000) {
@@ -17,13 +22,17 @@ class FileWriter(path: File) {
         }
     }
 
-    //write string to file in normal way without converting
+    /**
+     * write string to file in normal way without converting
+     */
     fun normalWrite(s: String) {
         outputStream.write(s.toByteArray())
         outputStream.flush()
     }
 
-    //flush writed string to file
+    /**
+     * flush binaryString to file
+     */
     fun flush() {
         while (lastBinary.length >= 8) {
             val item = lastBinary.substring(0, 8)
@@ -34,7 +43,9 @@ class FileWriter(path: File) {
         outputStream.flush()
     }
 
-    //adding zero to fill 8 bit of a byte then writing to file
+    /**
+     * adding zero to fill 8 bit of a Byte then writing to file
+     */
     fun flushLast() {
         flush()
         if (lastBinary.isNotEmpty()) {
@@ -50,6 +61,9 @@ class FileWriter(path: File) {
         outputStream.flush()
     }
 
+    /**
+     * close the stream
+     */
     fun close() {
         outputStream.close()
     }

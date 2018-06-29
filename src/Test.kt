@@ -1,28 +1,20 @@
-import io.MyChar
 import java.io.File
 import java.io.FileInputStream
 
+/**
+ * main function of application
+ */
 fun main(args: Array<String>) {
+    //path is set by default
     val file = File("/home/shayan4shayan/algorithm/")
     val list = ArrayList<File>()
     loadFiles(file, list)
-//    val charList = ArrayList<MyChar>()
-//    loadCharList(list, charList)
-//    list.forEach { Huffman(it).handleNewText() }
-    Huffman(list[0]).handleNewText()
+    list.forEach { Huffman(it).handleNewText() }
 }
 
-
-fun loadCharList(list: ArrayList<File>, charList: ArrayList<MyChar>) {
-    var size = 0
-    list.forEach {
-        val readed = read(it)
-        readed.forEach { charList.find { char -> it == char.char }?.increament() ?: charList.add(MyChar(it)) }
-        size += readed.length
-    }
-    charList.forEach { it.size = size }
-}
-
+/**
+ * reads content of a file and return it as String
+ */
 fun read(file: File): String {
     val inputStream = FileInputStream(file)
     val bytes = ByteArray(inputStream.available())
@@ -30,6 +22,12 @@ fun read(file: File): String {
     return String(bytes)
 }
 
+/**
+ * load all files in a folder recursively into a list
+ *
+ * @param file is a directory or a file
+ * @param list to insert files to it
+ */
 fun loadFiles(file: File, list: ArrayList<File>) {
     if (file.isDirectory) {
         file.listFiles().forEach { loadFiles(it, list) }

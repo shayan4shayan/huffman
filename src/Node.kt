@@ -1,4 +1,7 @@
- class Node {
+/**
+ * node of the huffman tree
+  */
+class Node {
     var left: Node? = null
     var right: Node? = null
     var value: Double = 0.toDouble()

@@ -3,11 +3,25 @@ import java.io.File
 import java.io.FileOutputStream
 import java.util.*
 
+/**
+ * class for code and decode in huffman way!!
+ * @param file is file to run algorithm on it
+ */
+
 class Huffman(val file: File) {
 
+    /**
+     * @param compressedFile is file to write compressed data on it
+     */
     private val compressedFile = File(file.absolutePath + ".hmc")
+    /**
+     * @param decompressedFile is file to write decompressed data on it
+     */
     private val decompressedFile = File(file.absolutePath + ".decoded.txt")
 
+    /**
+     * create files for compressed and decompressed
+     */
     init {
         if (!compressedFile.exists())
             compressedFile.createNewFile()
@@ -16,7 +30,9 @@ class Huffman(val file: File) {
         println(file.name)
     }
 
-
+    /**
+     *  priority queue to save characters sorted with their frequency
+     */
     private var nodes = PriorityQueue<Node> { o1, o2 -> if (o1.value < o2.value) -1 else 1 }
     private var codes = TreeMap<Char, String>()
 
@@ -27,6 +43,9 @@ class Huffman(val file: File) {
     var seperator = ','
 
 
+    /**
+     * simulate encode and decode process on original file and compressed file
+     */
     fun handleNewText(): Boolean {
         text = read(file)
         ASCII = IntArray(256)
@@ -60,6 +79,9 @@ class Huffman(val file: File) {
 
     }
 
+    /**
+     * clear all lists and regenerates them with ASCII array
+     */
     private fun prepareForEncode() {
 
         calculateCharIntervals(nodes, false)
@@ -69,6 +91,9 @@ class Huffman(val file: File) {
         generateCodes(nodes.peek(), "", 0)
     }
 
+    /**
+     * decodes compressed file and writes the result on decompressed file
+     */
     fun decodeText() {
         val reader = CompressedFileReader(compressedFile)
         val writer = FileOutputStream(decompressedFile)
@@ -99,6 +124,9 @@ class Huffman(val file: File) {
         }
     }
 
+    /**
+     * encodes file and writes the result on compressed file
+     */
     fun encodeText() {
         val outputStream = io.FileWriter(compressedFile)
         val table = generateTableString()
@@ -112,6 +140,10 @@ class Huffman(val file: File) {
         outputStream.close()
     }
 
+    /**
+     * generating a string to write a first of the file
+     * this part is using to recover ASCII table from the compressed file
+     */
     private fun generateTableString(): String {
         var ret = ""
         if (ASCII[0] > 0) {
@@ -127,15 +159,24 @@ class Huffman(val file: File) {
         return ret
     }
 
+    /**
+     * building huffman tree
+     */
     fun buildTree(vector: PriorityQueue<Node>) {
         while (vector.size > 1)
             vector.add(Node(vector.poll(), vector.poll()))
     }
 
+    /**
+     * print each character with its huffman code for debug
+     */
     fun printCodes() {
         codes.keys.forEach { println("$it : ${codes[it]}") }
     }
 
+    /**
+     * calculating frequency percent of any character and adding it to priority queue
+     */
     fun calculateCharIntervals(vector: PriorityQueue<Node>, printIntervals: Boolean) {
 
         for (i in ASCII.indices)
@@ -146,6 +187,9 @@ class Huffman(val file: File) {
             }
     }
 
+    /**
+     * generating huffman code for each character
+     */
     fun generateCodes(node: Node?, s: String, lastIndex: Int) {
         if (node != null) {
             if (node.right != null)
