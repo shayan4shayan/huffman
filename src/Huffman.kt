@@ -22,7 +22,10 @@ class Huffman(val file: File) {
 
     private var text = ""
     private var ASCII = IntArray(128)
-    private var EOF: Char = ' '
+    private var EOF: Char = Character.toChars(3)[0]
+    private var tableEOF = '~'
+    var seperator = ','
+
 
     fun handleNewText(): Boolean {
         text = read(file)
@@ -30,33 +33,54 @@ class Huffman(val file: File) {
         nodes.clear()
         codes.clear()
 
-        calculateCharIntervals(nodes, false)
-        for (i in 0 until ASCII.size) {
-            if (ASCII[i] == 0) {
-                EOF = i.toChar()
-                ASCII[i]++;
-                break
-            }
-        }
-        nodes.add(Node((1 / text.length).toDouble(), EOF.toString()))
-        buildTree(nodes)
-        generateCodes(nodes.peek(), "", 0)
-
+        //getting frequency of each character
+        for (i in 0 until text.length)
+            ASCII[text[i].toInt()]++
+        //generating huffman tree
+        prepareForEncode()
+        //print for log
         printCodes()
+
+        //start encode
         encodeText()
+        //clear nodes and table just for simulate decoding
+        nodes.clear()
+        codes.clear()
+        //start decode
         decodeText()
+        //compute similarity of files
         val similarity = FileCompariator(file, decompressedFile).compare()
+        //print answers
         println("compress ratio is : ${(1 - (compressedFile.length().toDouble() / file.length().toDouble())) * 100}")
         println("File is ${similarity * 100} percent same to decompressed file")
         println()
+
         return false
 
 
     }
 
+    private fun prepareForEncode() {
+
+        calculateCharIntervals(nodes, false)
+
+        nodes.add(Node((1 / text.length).toDouble(), EOF.toString()))
+        buildTree(nodes)
+        generateCodes(nodes.peek(), "", 0)
+    }
+
     fun decodeText() {
         val reader = CompressedFileReader(compressedFile)
         val writer = FileOutputStream(decompressedFile)
+        //loading huffman words frequency from file
+        val newArr = reader.readTable(tableEOF, seperator)
+        print(Arrays.equals(ASCII, newArr))
+        ASCII = newArr
+        //generating huffman tree from data loaded from file
+
+        prepareForEncode()
+
+        //start decode
         var char = reader.read()
         while (char != null) {
             var tmpNode: Node? = nodes.peek()
@@ -77,12 +101,30 @@ class Huffman(val file: File) {
 
     fun encodeText() {
         val outputStream = io.FileWriter(compressedFile)
+        val table = generateTableString()
+        //print(table + " " + table.length)
+        outputStream.normalWrite(table)
         for (i in 0 until text.length) {
             outputStream.write(codes[text[i]]!!)
         }
         outputStream.write(codes[EOF]!!)
         outputStream.flushLast()
         outputStream.close()
+    }
+
+    private fun generateTableString(): String {
+        var ret = ""
+        if (ASCII[0] > 0) {
+            ret += ASCII[0]
+        }
+        (1 until ASCII.size).forEach {
+            ret += seperator
+            if (ASCII[it] > 0) {
+                ret += ASCII[it]
+            }
+        }
+        ret += tableEOF
+        return ret
     }
 
     fun buildTree(vector: PriorityQueue<Node>) {
@@ -95,9 +137,6 @@ class Huffman(val file: File) {
     }
 
     fun calculateCharIntervals(vector: PriorityQueue<Node>, printIntervals: Boolean) {
-
-        for (i in 0 until text.length)
-            ASCII[text[i].toInt()]++
 
         for (i in ASCII.indices)
             if (ASCII[i] > 0) {
