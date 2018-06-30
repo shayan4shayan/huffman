@@ -55,10 +55,13 @@ class Huffman(val file: File) {
         //getting frequency of each character
         for (i in 0 until text.length)
             ASCII[text[i].toInt()]++
+
+        ASCII[3]++
         //generating huffman tree
         prepareForEncode()
+
         //print for log
-        printCodes()
+        //printCodes()
 
         //start encode
         encodeText()
@@ -70,9 +73,9 @@ class Huffman(val file: File) {
         //compute similarity of files
         val similarity = FileCompariator(file, decompressedFile).compare()
         //print answers
-        println("compress ratio is : ${(1 - (compressedFile.length().toDouble() / file.length().toDouble())) * 100}")
+        println("compress ratio is : ${((file.length().toDouble() / compressedFile.length().toDouble()))}")
+        println("saving_space is : ${(1 - ((compressedFile.length().toDouble() / file.length().toDouble()))) * 100}")
         println("File is ${similarity * 100} percent same to decompressed file")
-        println()
 
         return false
 
@@ -86,7 +89,7 @@ class Huffman(val file: File) {
 
         calculateCharIntervals(nodes, false)
 
-        nodes.add(Node((1 / text.length).toDouble(), EOF.toString()))
+        //nodes.add(Node((1 / text.length).toDouble(), EOF.toString()))
         buildTree(nodes)
         generateCodes(nodes.peek(), "", 0)
     }
@@ -99,7 +102,7 @@ class Huffman(val file: File) {
         val writer = FileOutputStream(decompressedFile)
         //loading huffman words frequency from file
         val newArr = reader.readTable(tableEOF, seperator)
-        print(Arrays.equals(ASCII, newArr))
+        //print(Arrays.equals(ASCII, newArr))
         ASCII = newArr
         //generating huffman tree from data loaded from file
 
@@ -135,6 +138,7 @@ class Huffman(val file: File) {
         for (i in 0 until text.length) {
             outputStream.write(codes[text[i]]!!)
         }
+        outputStream.write(codes[EOF]!!)
         outputStream.write(codes[EOF]!!)
         outputStream.flushLast()
         outputStream.close()

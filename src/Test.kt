@@ -9,7 +9,13 @@ fun main(args: Array<String>) {
     val file = File("/home/shayan4shayan/algorithm/")
     val list = ArrayList<File>()
     loadFiles(file, list)
-    list.forEach { Huffman(it).handleNewText() }
+    list.forEach {
+        try {
+            Huffman(it).handleNewText()
+        } catch (e: Exception) {
+        }
+        println()
+    }
 }
 
 /**

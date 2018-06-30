@@ -69,7 +69,6 @@ class CompressedFileReader(file: File) {
         var i = 0
         val arr = IntArray(256)
         var char = buffer[index].toChar()
-        print(index)
         var str = ""
         while (char != eof) {
             if (char != seperator) {
