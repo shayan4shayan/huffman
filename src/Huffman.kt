@@ -3,6 +3,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.security.MessageDigest
 import java.util.*
+import kotlin.experimental.and
 
 /**
  * class for code and decode in huffman way!!
@@ -52,7 +53,6 @@ class Huffman(val file: File) {
         ASCII = IntArray(256)
         nodes.clear()
         codes.clear()
-        val digest = MessageDigest.getInstance("MD5")
 
         //getting frequency of each character
         for (i in 0 until text.length)
@@ -80,14 +80,31 @@ class Huffman(val file: File) {
 
         val decompressed = read(decompressedFile)
 
-        println("Original file MD5:   " + String(digest.digest(text.toByteArray())))
-        println("Decompressed file MD5" + String(digest.digest(decompressed.toByteArray())))
+        println("Original file MD5:     ${md5(text)}")
+        println("Decompressed file MD5: ${md5(decompressed)}")
 
         println("File is ${similarity * 100} percent same to decompressed file")
 
         return false
 
 
+    }
+
+    /**
+     * generate md5 hash for inputString
+     * @param text is string to generate md5 for
+     */
+    private fun md5(text: String): String {
+        val digest = MessageDigest.getInstance("MD5")
+
+        digest.update(text.toByteArray())
+
+        val byteData = digest.digest()
+
+        val sb = StringBuffer()
+        for (i in byteData.indices)
+            sb.append(Integer.toString((byteData[i] and 0xff.toByte()) + 0x100, 16).substring(1))
+        return sb.toString()
     }
 
     /**
@@ -175,8 +192,12 @@ class Huffman(val file: File) {
      * building huffman tree
      */
     fun buildTree(vector: PriorityQueue<Node>) {
+        //println(vector.peek().value)
+        val node = vector.find { it.value == vector.maxBy { it.value }!!.value }
+        vector.remove(node)
         while (vector.size > 1)
             vector.add(Node(vector.poll(), vector.poll()))
+        vector.add(Node(node!!, vector.poll()))
     }
 
     /**

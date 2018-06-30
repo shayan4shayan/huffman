@@ -7,13 +7,18 @@ import java.nio.charset.Charset
  */
 fun main(args: Array<String>) {
 //    path is set by default
-    val file = File("/home/shayan4shayan/algorithm/")
+    if (args.isEmpty() || args.size != 1) {
+        print("usage : java -jar file.jar <PATH TO FILE>")
+        return
+    }
+    val file = File(args[0])
     val list = ArrayList<File>()
     loadFiles(file, list)
     list.forEach {
         try {
             Huffman(it).handleNewText()
         } catch (e: Exception) {
+            e.printStackTrace()
         }
         println()
     }
