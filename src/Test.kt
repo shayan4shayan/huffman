@@ -1,11 +1,12 @@
 import java.io.File
 import java.io.FileInputStream
+import java.nio.charset.Charset
 
 /**
  * main function of application
  */
 fun main(args: Array<String>) {
-    //path is set by default
+//    path is set by default
     val file = File("/home/shayan4shayan/algorithm/")
     val list = ArrayList<File>()
     loadFiles(file, list)
@@ -16,6 +17,7 @@ fun main(args: Array<String>) {
         }
         println()
     }
+
 }
 
 /**
@@ -25,7 +27,7 @@ fun read(file: File): String {
     val inputStream = FileInputStream(file)
     val bytes = ByteArray(inputStream.available())
     inputStream.read(bytes)
-    return String(bytes)
+    return String(bytes, Charset.forName("ISO-8859-1"))
 }
 
 /**

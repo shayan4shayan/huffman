@@ -50,9 +50,7 @@ class CompressedFileReader(file: File) {
             buffer[index].apply { binaryString = byteToString(this) }
             index++
         }
-        if (index == size() - 1) {
 
-        }
         if (binaryString.isEmpty()) {
             return null
         }

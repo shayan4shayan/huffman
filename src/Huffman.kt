@@ -1,6 +1,7 @@
 import io.CompressedFileReader
 import java.io.File
 import java.io.FileOutputStream
+import java.security.MessageDigest
 import java.util.*
 
 /**
@@ -51,6 +52,7 @@ class Huffman(val file: File) {
         ASCII = IntArray(256)
         nodes.clear()
         codes.clear()
+        val digest = MessageDigest.getInstance("MD5")
 
         //getting frequency of each character
         for (i in 0 until text.length)
@@ -75,6 +77,12 @@ class Huffman(val file: File) {
         //print answers
         println("compress ratio is : ${((file.length().toDouble() / compressedFile.length().toDouble()))}")
         println("saving_space is : ${(1 - ((compressedFile.length().toDouble() / file.length().toDouble()))) * 100}")
+
+        val decompressed = read(decompressedFile)
+
+        println("Original file MD5:   " + String(digest.digest(text.toByteArray())))
+        println("Decompressed file MD5" + String(digest.digest(decompressed.toByteArray())))
+
         println("File is ${similarity * 100} percent same to decompressed file")
 
         return false
